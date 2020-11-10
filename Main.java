@@ -56,6 +56,7 @@ public class Main {
             if (codeSet.contains(code)) {
                 continue;
             }
+            codeSet.add(code);
             writer.append(code + "\n\r");
             writer.flush();
             System.out.println(code);
