@@ -1,12 +1,17 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+
+    static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void main(String[] args) throws IOException {
 
@@ -43,9 +48,12 @@ public class Main {
         file.createNewFile();
         Set<String> codeSet;
         try (Stream<String> lines = Files.lines(Paths.get(fileName))) {
-            codeSet = lines.collect(Collectors.toSet());
+            codeSet = lines.filter(Predicate.not(String::isBlank)).map(s -> s.split("\t")[0]).collect(Collectors.toSet());
         }
-        System.out.println("Loaded " + codeSet.size() + " codes. Generating " + number + " codes of length " + length);
+
+        String date = FORMAT.format(new Date());
+
+        System.out.println("Loaded " + codeSet.size() + " existing codes from " + fileName + ". Generating " + number + " codes of length " + length + " for date " + date);
 
         Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file, true), "UTF-8"));
@@ -57,10 +65,9 @@ public class Main {
                 continue;
             }
             codeSet.add(code);
-            writer.append(code + "\n\r");
+            writer.append(code + "\t" + date + "\r\n");
             writer.flush();
-            System.out.println(code);
-            i++;
+            System.out.println((++i) + ": " + code);
         }
 
     }
