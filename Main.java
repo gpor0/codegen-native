@@ -26,7 +26,8 @@ public class Main {
         if (args.length > 0) {
             String arg1 = args[0];
             try {
-                number = Integer.parseInt(arg1);
+                if (Integer.parseInt(arg1) > 0)
+                    number = Integer.parseInt(arg1);
             } catch (NumberFormatException e) {
                 System.err.println("Invalid number: " + arg1);
                 System.exit(1);
@@ -35,7 +36,8 @@ public class Main {
             if (args.length > 1) {
                 String arg2 = args[1];
                 try {
-                    length = Integer.parseInt(arg2);
+                    if (Integer.parseInt(arg2) > 4)
+                        length = Integer.parseInt(arg2);
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid number: " + arg1);
                     System.exit(1);
@@ -58,6 +60,8 @@ public class Main {
         Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file, true), "UTF-8"));
 
+        FileOutputStream tmpWriter = new FileOutputStream("last-gen.txt");
+
         int i = 0;
         while (i < number) {
             String code = getRandomString(length);
@@ -66,10 +70,14 @@ public class Main {
             }
             codeSet.add(code);
             writer.append(code + "\t" + date + "\r\n");
+            tmpWriter.write((code + "\r\n").getBytes());
             writer.flush();
+            tmpWriter.flush();
             System.out.println((++i) + ": " + code);
         }
 
+        tmpWriter.close();
+        writer.close();
     }
 
     protected static String getRandomString(int length) {
